@@ -1,10 +1,12 @@
 import os
 import base64
 import xmltodict
+import binascii
 import requests
 import json
 from datetime import datetime
 from flask import Flask, request
+from xml.parsers.expat import ExpatError
 
 app = Flask(__name__)
 
@@ -23,11 +25,15 @@ def index():
         with open(f'input-{datetime.now().isoformat()}.xml', 'wb') as f:
             f.write(request.get_data())
 
-    data = xmltodict.parse(request.get_data(), process_namespaces=True, namespaces=namespaces)
+    try:
+        data = xmltodict.parse(request.get_data(), process_namespaces=True, namespaces=namespaces)
+    except ExpatError:
+        return 'Not a well-formatted XML document', 400
+
     body = data['soap:Envelope']['soap:Body']['http://www.egem.nl/StUF/sector/ef/0310:wloLk01']['http://www.egem.nl/StUF/sector/ef/0310:object']
 
     melding = body['http://www.egem.nl/StUF/sector/ef/0310:melding']
-    bijlage = body['http://www.egem.nl/StUF/sector/ef/0310:bijlage']
+    bijlage = body.get('http://www.egem.nl/StUF/sector/ef/0310:bijlage')
     aangevraagdDoorGerelateerde = body['http://www.egem.nl/StUF/sector/ef/0310:isAangevraagdDoor']['http://www.egem.nl/StUF/sector/ef/0310:gerelateerde']
 
     omschrijving = melding['http://www.egem.nl/StUF/sector/ef/0310:omschrijvingMelding']
@@ -93,22 +99,39 @@ def index():
     }
 
     response = requests.post(SIGNALEN_ENDPOINT + '/v1/public/signals/', data=json.dumps(data), headers=headers)
+    if not response.ok:
+        return 'Signal could not be created in Signalen', 400
+
     signal_data = response.json()
-    signal_id = signal_data['signal_id']
+    signal_id = signal_data.get('signal_id')
+    if not signal_id:
+        return 'Could not fetch Signal id from Signal post', 400
 
-    bijlage_bestandsnaam = bijlage['@http://www.egem.nl/StUF/StUF0301:bestandsnaam']
-    bijlage_data = bijlage['#text']
+    if bijlage:
+        bijlage_data = bijlage.get('#text')
+        if not bijlage_data:
+            return 'Could not find bijlage data', 400
 
-    data = {
-        'signal_id': signal_id
-    }
+        bijlage_bestandsnaam = bijlage.get('@http://www.egem.nl/StUF/StUF0301:bestandsnaam')
+        if not bijlage_bestandsnaam:
+            return 'Could not find bijlage bestandsnaam', 400
 
-    files = {
-        'file': (bijlage_bestandsnaam, base64.b64decode(bijlage_data), 'application/octet-stream')
-    }
+        data = {
+            'signal_id': signal_id
+        }
 
-    response = requests.post(SIGNALEN_ENDPOINT + f'/v1/public/signals/{signal_id}/attachments', data=data, files=files)
-    attachment_data = response.json()
+        try:
+            files = {
+                'file': (bijlage_bestandsnaam, base64.b64decode(bijlage_data), 'application/octet-stream')
+            }
+        except binascii.Error:
+            return 'Signal is created, but provided bijlage is not correctly base64 encoded and not created', 400
+
+        response = requests.post(SIGNALEN_ENDPOINT + f'/v1/public/signals/{signal_id}/attachments', data=data, files=files)
+        if not response.ok:
+            return 'Could not create attachment in Signalen', 400
+
+        attachment_data = response.json()
 
     return ''
 
