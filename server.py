@@ -5,8 +5,9 @@ import binascii
 import requests
 import json
 from datetime import datetime
-from flask import Flask, request
+from flask import Flask, Response, request
 from xml.parsers.expat import ExpatError
+from lib import DeliveryConfirmationMessage
 
 app = Flask(__name__)
 
@@ -30,18 +31,24 @@ def index():
     except ExpatError:
         return 'Not a well-formatted XML document', 400
 
-    body = data['soap:Envelope']['soap:Body']['http://www.egem.nl/StUF/sector/ef/0310:wloLk01']['http://www.egem.nl/StUF/sector/ef/0310:object']
+    body = data['soap:Envelope']['soap:Body']
 
-    melding = body['http://www.egem.nl/StUF/sector/ef/0310:melding']
-    bijlage = body.get('http://www.egem.nl/StUF/sector/ef/0310:bijlage')
-    aangevraagdDoorGerelateerde = body['http://www.egem.nl/StUF/sector/ef/0310:isAangevraagdDoor']['http://www.egem.nl/StUF/sector/ef/0310:gerelateerde']
+    stuurgegevens = body['http://www.egem.nl/StUF/sector/ef/0310:wloLk01']['http://www.egem.nl/StUF/sector/ef/0310:stuurgegevens']
+    referentienummer = stuurgegevens['http://www.egem.nl/StUF/StUF0301:referentienummer']
+
+    object = body['http://www.egem.nl/StUF/sector/ef/0310:wloLk01']['http://www.egem.nl/StUF/sector/ef/0310:object']
+
+
+    melding = object['http://www.egem.nl/StUF/sector/ef/0310:melding']
+    bijlage = object.get('http://www.egem.nl/StUF/sector/ef/0310:bijlage')
+    aangevraagdDoorGerelateerde = object['http://www.egem.nl/StUF/sector/ef/0310:isAangevraagdDoor']['http://www.egem.nl/StUF/sector/ef/0310:gerelateerde']
 
     omschrijving = melding['http://www.egem.nl/StUF/sector/ef/0310:omschrijvingMelding']
 
     emailadres = aangevraagdDoorGerelateerde['http://www.egem.nl/StUF/sector/bg/0310:sub.emailadres']
     telefoonnummer = aangevraagdDoorGerelateerde['http://www.egem.nl/StUF/sector/bg/0310:sub.telefoonnummer']
 
-    extraElementen = body['http://www.egem.nl/StUF/StUF0301:extraElementen']['http://www.egem.nl/StUF/StUF0301:extraElement']
+    extraElementen = object['http://www.egem.nl/StUF/StUF0301:extraElementen']['http://www.egem.nl/StUF/StUF0301:extraElement']
 
     longitude = None
     latitude = None
@@ -133,7 +140,8 @@ def index():
 
         attachment_data = response.json()
 
-    return ''
+    content = DeliveryConfirmationMessage(referentienummer, signal_id)
+    return Response(content.tostring(), mimetype='text/xml')
 
 @app.route('/healthz')
 def health():

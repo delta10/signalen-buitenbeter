@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <soapenv:Body>
+        <StUF:Bv03Bericht xmlns:StUF="http://www.egem.nl/StUF/StUF0301" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <StUF:stuurgegevens xmlns="http://www.egem.nl/StUF/StUF0301">
+                <berichtcode>Bv03</berichtcode>
+                <zender>
+                    <organisatie>MLD</organisatie>
+                    <applicatie>INPROCES</applicatie>
+                </zender>
+                <ontvanger>
+                    <organisatie>MLD</organisatie>
+                    <applicatie>MLD</applicatie>
+                </ontvanger>
+                <referentienummer>20190121154039</referentienummer>
+                <tijdstipBericht>2019012115403900</tijdstipBericht>
+                <crossRefnummer>143101154047</crossRefnummer>
+            </StUF:stuurgegevens>
+        </StUF:Bv03Bericht>
+    </soapenv:Body>
+</soapenv:Envelope>

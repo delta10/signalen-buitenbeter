@@ -1,0 +1,94 @@
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+  <s:Header>
+    <To s:mustUnderstand="1" xmlns="http://schemas.microsoft.com/ws/2005/05/addressing/none">http://esb.bergenopzoom.nl/WcfListenerGeneriekAsync/BuitenBeter_app_stuf_ef_kg</To>
+    <Action s:mustUnderstand="1" xmlns="http://schemas.microsoft.com/ws/2005/05/addressing/none">http://www.egem.nl/StUF/sector/ef/0310/wloLk01</Action>
+  </s:Header>
+  <s:Body xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <wloLk01 xmlns="http://www.egem.nl/StUF/sector/ef/0310">
+      <stuurgegevens>
+        <berichtcode xmlns="http://www.egem.nl/StUF/StUF0301">Lk01</berichtcode>
+        <zender xmlns="http://www.egem.nl/StUF/StUF0301">
+          <organisatie>Yucat</organisatie>
+          <applicatie>BuitenBeter</applicatie>
+        </zender>
+        <ontvanger xmlns="http://www.egem.nl/StUF/StUF0301">
+          <organisatie>0748</organisatie>
+          <applicatie>WebNext</applicatie>
+        </ontvanger>
+        <referentienummer xmlns="http://www.egem.nl/StUF/StUF0301">f10e71b8-38da-4766-bf42-22e36d436916</referentienummer>
+        <tijdstipBericht xmlns="http://www.egem.nl/StUF/StUF0301">20220329141907000</tijdstipBericht>
+        <entiteittype xmlns="http://www.egem.nl/StUF/StUF0301">WLO</entiteittype>
+      </stuurgegevens>
+      <parameters>
+        <mutatiesoort xmlns="http://www.egem.nl/StUF/StUF0301">T</mutatiesoort>
+        <indicatorOvername xmlns="http://www.egem.nl/StUF/StUF0301">I</indicatorOvername>
+      </parameters>
+      <object a:verwerkingssoort="T" a:entiteittype="WLO" xmlns:a="http://www.egem.nl/StUF/StUF0301">
+        <aanvraagnummer>1233707</aanvraagnummer>
+        <aanvraagdatum>20220329</aanvraagdatum>
+        <betaalgegevens xsi:nil="true"></betaalgegevens>
+        <a:extraElementen>
+          <a:extraElement naam="latitude">51.4918491</a:extraElement>
+          <a:extraElement naam="longitude">4.2944734</a:extraElement>
+        </a:extraElementen>
+        <isAangevraagdDoor a:verwerkingssoort="T" a:entiteittype="WLONPSANV">
+          <gerelateerde a:entiteittype="NPS" a:sleutelVerzendend="" a:sleutelOntvangend="" a:sleutelGegevensbeheer="" a:verwerkingssoort="T">
+            <geslachtsnaam xmlns="http://www.egem.nl/StUF/sector/bg/0310">Testman</geslachtsnaam>
+            <voorvoegselGeslachtsnaam xmlns="http://www.egem.nl/StUF/sector/bg/0310"></voorvoegselGeslachtsnaam>
+            <voornamen xmlns="http://www.egem.nl/StUF/sector/bg/0310">J</voornamen>
+            <geslachtsaanduiding xmlns="http://www.egem.nl/StUF/sector/bg/0310">V</geslachtsaanduiding>
+            <verblijfsadres xmlns="http://www.egem.nl/StUF/sector/bg/0310">
+              <aoa.identificatie xsi:nil="true"></aoa.identificatie>
+              <wpl.identificatie xsi:nil="true"></wpl.identificatie>
+              <wpl.woonplaatsNaam>Bergen op Zoom</wpl.woonplaatsNaam>
+              <gor.identificatie xsi:nil="true"></gor.identificatie>
+              <opr.identificatie xsi:nil="true"></opr.identificatie>
+              <gor.openbareRuimteNaam>Teststraat </gor.openbareRuimteNaam>
+              <gor.straatnaam xsi:nil="true"></gor.straatnaam>
+              <aoa.postcode>4622XS</aoa.postcode>
+              <aoa.huisnummer>40</aoa.huisnummer>
+              <aoa.huisletter xsi:nil="true"></aoa.huisletter>
+              <aoa.huisnummertoevoeging xsi:nil="true"></aoa.huisnummertoevoeging>
+              <inp.locatiebeschrijving xsi:nil="true"></inp.locatiebeschrijving>
+              <begindatumVerblijf xsi:nil="true"></begindatumVerblijf>
+            </verblijfsadres>
+            <sub.correspondentieAdres xmlns="http://www.egem.nl/StUF/sector/bg/0310">
+              <typering xsi:nil="true"></typering>
+              <wpl.woonplaatsNaam xsi:nil="true"></wpl.woonplaatsNaam>
+              <postcode xsi:nil="true"></postcode>
+            </sub.correspondentieAdres>
+            <sub.telefoonnummer xmlns="http://www.egem.nl/StUF/sector/bg/0310">0612345678</sub.telefoonnummer>
+            <sub.emailadres xmlns="http://www.egem.nl/StUF/sector/bg/0310">test@test.nl</sub.emailadres>
+          </gerelateerde>
+          <indStatusInfo>N</indStatusInfo>
+        </isAangevraagdDoor>
+        <indUpdatesViaEmailOntvangen>N</indUpdatesViaEmailOntvangen>
+        <melding>
+          <waarGaatDeMeldingOver>Zwerfvuil op straat</waarGaatDeMeldingOver>
+          <waaroverIetsMelden xsi:nil="true"></waaroverIetsMelden>
+          <omschrijvingMelding>Iemand heeft voor de school zijn afval gedumpt en de zak is al half open gescheurd door de vogels </omschrijvingMelding>
+          <indZelfLast>J</indZelfLast>
+          <watVoorLast xsi:nil="true"></watVoorLast>
+        </melding>
+        <plaats>
+          <indOverAdres>J</indOverAdres>
+          <indOverPlaatsBijAdres>J</indOverPlaatsBijAdres>
+          <omschrijvingPlaats xsi:nil="true"></omschrijvingPlaats>
+          <indOverEigenAdres>N</indOverEigenAdres>
+          <betreftAdres a:verwerkingssoort="T" a:entiteittype="WLOTGO">
+            <gerelateerde a:entiteittype="TGO" a:sleutelVerzendend="" a:sleutelOntvangend="" a:sleutelGegevensbeheer="" a:verwerkingssoort="T">
+              <adresAanduidingGrp xmlns="http://www.egem.nl/StUF/sector/bg/0310">
+                <wpl.woonplaatsNaam>Bergen op Zoom</wpl.woonplaatsNaam>
+                <gor.openbareRuimteNaam>Teststraat</gor.openbareRuimteNaam>
+                <aoa.postcode xsi:nil="true"></aoa.postcode>
+                <aoa.huisnummer>40</aoa.huisnummer>
+              </adresAanduidingGrp>
+            </gerelateerde>
+          </betreftAdres>
+        </plaats>
+        <veroorzaker xsi:nil="true"></veroorzaker>
+        <bijlageWijze>digitaal bijgevoegd</bijlageWijze>
+      </object>
+    </wloLk01>
+  </s:Body>
+</s:Envelope>
