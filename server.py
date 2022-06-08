@@ -12,6 +12,9 @@ from lib import DeliveryConfirmationMessage
 app = Flask(__name__)
 
 SIGNALEN_ENDPOINT = os.getenv('SIGNALEN_ENDPOINT')
+JWT_TOKEN = os.getenv('JWT_TOKEN')
+
+SOURCE_NAME = os.getenv('SOURCE_NAME', 'BuitenBeter')
 REVGEO_ENDPOINT = 'https://geodata.nationaalgeoregister.nl/locatieserver/revgeo/?type=adres&rows=1&fl=id,weergavenaam,straatnaam,huis_nlt,postcode,woonplaatsnaam,centroide_ll&distance=100'
 
 @app.route('/', methods=['POST'])
@@ -61,7 +64,8 @@ def index():
             latitude = element['#text']
 
     headers = {
-        'Content-type': 'application/json'
+        'Content-type': 'application/json',
+        'Authorization': f'Bearer {JWT_TOKEN}'
     }
 
     data = {
@@ -101,16 +105,16 @@ def index():
             'phone': telefoonnummer,
             'sharing_allowed': False
         },
-        'source': 'online',
-        'incident_date_start': datetime.now().isoformat(),
+        'source': SOURCE_NAME,
+        'incident_date_start': datetime.now().astimezone().isoformat(),
     }
 
-    response = requests.post(SIGNALEN_ENDPOINT + '/v1/public/signals/', data=json.dumps(data), headers=headers)
+    response = requests.post(SIGNALEN_ENDPOINT + '/v1/private/signals/', data=json.dumps(data), headers=headers)
     if not response.ok:
         return 'Signal could not be created in Signalen', 400
 
     signal_data = response.json()
-    signal_id = signal_data.get('signal_id')
+    signal_id = signal_data.get('id')
     if not signal_id:
         return 'Could not fetch Signal id from Signal post', 400
 
@@ -134,11 +138,16 @@ def index():
         except binascii.Error:
             return 'Signal is created, but provided bijlage is not correctly base64 encoded and not created', 400
 
-        response = requests.post(SIGNALEN_ENDPOINT + f'/v1/public/signals/{signal_id}/attachments', data=data, files=files)
+        headers = {
+            'Authorization': f'Bearer {JWT_TOKEN}'
+        }
+
+        response = requests.post(SIGNALEN_ENDPOINT + f'/v1/private/signals/{signal_id}/attachments', data=data, files=files, headers=headers)
         if not response.ok:
             return 'Could not create attachment in Signalen', 400
 
         attachment_data = response.json()
+
 
     content = DeliveryConfirmationMessage(referentienummer, signal_id)
     return Response(content.tostring(), mimetype='text/xml')
