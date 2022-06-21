@@ -15,7 +15,6 @@ SIGNALEN_ENDPOINT = os.getenv('SIGNALEN_ENDPOINT')
 JWT_TOKEN = os.getenv('JWT_TOKEN')
 
 SOURCE_NAME = os.getenv('SOURCE_NAME', 'BuitenBeter')
-REVGEO_ENDPOINT = 'https://geodata.nationaalgeoregister.nl/locatieserver/revgeo/?type=adres&rows=1&fl=id,weergavenaam,straatnaam,huis_nlt,postcode,woonplaatsnaam,centroide_ll&distance=100'
 
 @app.route('/', methods=['POST'])
 def index():
@@ -41,8 +40,26 @@ def index():
 
     object = body['http://www.egem.nl/StUF/sector/ef/0310:wloLk01']['http://www.egem.nl/StUF/sector/ef/0310:object']
 
-
     melding = object['http://www.egem.nl/StUF/sector/ef/0310:melding']
+
+    betreftAdres = object['http://www.egem.nl/StUF/sector/ef/0310:plaats'].get('http://www.egem.nl/StUF/sector/ef/0310:betreftAdres')
+    gerelateerde = None
+    adresAanduidingGrp = None
+
+    if betreftAdres:
+        gerelateerde = betreftAdres.get('http://www.egem.nl/StUF/sector/ef/0310:gerelateerde')
+    if gerelateerde:
+        adresAanduidingGrp = gerelateerde.get('http://www.egem.nl/StUF/sector/bg/0310:adresAanduidingGrp')
+
+    adres = None
+    if betreftAdres and gerelateerde and adresAanduidingGrp:
+        adres = {
+            'openbare_ruimte': adresAanduidingGrp['http://www.egem.nl/StUF/sector/bg/0310:gor.openbareRuimteNaam'],
+            'huisnummer': adresAanduidingGrp['http://www.egem.nl/StUF/sector/bg/0310:aoa.huisnummer'],
+            'postcode': '',
+            'woonplaats': adresAanduidingGrp['http://www.egem.nl/StUF/sector/bg/0310:wpl.woonplaatsNaam']
+        }
+
     bijlage = object.get('http://www.egem.nl/StUF/sector/ef/0310:bijlage')
     aangevraagdDoorGerelateerde = object['http://www.egem.nl/StUF/sector/ef/0310:isAangevraagdDoor']['http://www.egem.nl/StUF/sector/ef/0310:gerelateerde']
 
@@ -75,26 +92,13 @@ def index():
     response = requests.post(SIGNALEN_ENDPOINT + '/category/prediction', data=json.dumps(data), headers=headers)
     classification_data = response.json()
 
-    response = requests.post(REVGEO_ENDPOINT + f'&lon={longitude}&lat={latitude}')
-    revgeo_data = response.json()
-
-    address = None
-    if len(revgeo_data['response']['docs']) > 0:
-        first_doc = revgeo_data['response']['docs'][0]
-        address = {
-            'openbare_ruimte': first_doc.get('weergavenaam', ''),
-            'huisnummer': first_doc.get('huis_nlt', ''),
-            'postcode': first_doc.get('postcode', ''),
-            'woonplaats': first_doc.get('woonplaatsnaam', '')
-        }
-
     data = {
         'text': omschrijving,
         'category': {
             'sub_category': classification_data['subrubriek'][0][0]
         },
         'location': {
-            'address': address,
+            'address': adres,
             'geometrie': {
                 'type': 'Point',
                 'coordinates': [ float(longitude), float(latitude) ]
