@@ -114,11 +114,12 @@ def index():
     }
 
     response = requests.post(SIGNALEN_ENDPOINT + '/v1/private/signals/', data=json.dumps(data), headers=headers)
+
     if not response.ok:
         return 'Signal could not be created in Signalen', 400
 
     signal_data = response.json()
-    signal_id = signal_data.get('id')
+    signal_id = signal_data.get('signal_id')
     if not signal_id:
         return 'Could not fetch Signal id from Signal post', 400
 
@@ -146,7 +147,7 @@ def index():
             'Authorization': f'Bearer {JWT_TOKEN}'
         }
 
-        response = requests.post(SIGNALEN_ENDPOINT + f'/v1/private/signals/{signal_id}/attachments', data=data, files=files, headers=headers)
+        response = requests.post(SIGNALEN_ENDPOINT + f'/v1/public/signals/{signal_id}/attachments/', data=data, files=files, headers=headers)
         if not response.ok:
             return 'Could not create attachment in Signalen', 400
 
