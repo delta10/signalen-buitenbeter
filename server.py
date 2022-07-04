@@ -108,6 +108,7 @@ def index():
 
     try:
         classification_data = response.json()
+        print(classification_data)
 
         if classification_data['subrubriek'][1][0] >= MINIMUM_CERTAINTY:
             sub_category = classification_data['subrubriek'][0][0]
