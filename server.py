@@ -69,7 +69,7 @@ def index():
     bijlage = object.get('http://www.egem.nl/StUF/sector/ef/0310:bijlage')
     aangevraagdDoorGerelateerde = object['http://www.egem.nl/StUF/sector/ef/0310:isAangevraagdDoor']['http://www.egem.nl/StUF/sector/ef/0310:gerelateerde']
 
-    omschrijving = melding['http://www.egem.nl/StUF/sector/ef/0310:omschrijvingMelding']
+    omschrijvingMelding = melding['http://www.egem.nl/StUF/sector/ef/0310:omschrijvingMelding']
     waarGaatDeMeldingOver = melding['http://www.egem.nl/StUF/sector/ef/0310:waarGaatDeMeldingOver']
 
     emailadres = aangevraagdDoorGerelateerde['http://www.egem.nl/StUF/sector/bg/0310:sub.emailadres']
@@ -92,14 +92,14 @@ def index():
         'Authorization': f'Bearer {JWT_TOKEN}'
     }
 
-    if not omschrijving:
-        if waarGaatDeMeldingOver:
-            omschrijving = waarGaatDeMeldingOver
-        else:
-            omschrijving = 'overig'
+    text = 'niet ingevuld'
+    if omschrijvingMelding and isinstance(omschrijvingMelding, str):
+        text = omschrijvingMelding
+    elif waarGaatDeMeldingOver and isinstance(waarGaatDeMeldingOver, str):
+        text = waarGaatDeMeldingOver
 
     data = {
-        'text': omschrijving
+        'text': text
     }
 
     response = requests.post(SIGNALEN_ENDPOINT + '/category/prediction', data=json.dumps(data), headers=headers)
@@ -116,7 +116,7 @@ def index():
         print('Could not decode or index prediction response: ', response.text)
 
     data = {
-        'text': omschrijving,
+        'text': text,
         'category': {
             'sub_category': sub_category
         },
