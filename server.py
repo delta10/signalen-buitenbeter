@@ -104,15 +104,13 @@ def index():
 
     response = requests.post(SIGNALEN_ENDPOINT + '/category/prediction', data=json.dumps(data), headers=headers)
 
-    sub_category = None
+    sub_category = SIGNALEN_ENDPOINT + '/v1/public/terms/categories/overig/sub_categories/overig'
 
     try:
         classification_data = response.json()
 
         if classification_data['subrubriek'][1][0] >= MINIMUM_CERTAINTY:
             sub_category = classification_data['subrubriek'][0][0]
-        else:
-            sub_category = SIGNALEN_ENDPOINT + '/v1/public/terms/categories/overig/sub_categories/overig'
 
     except (JSONDecodeError, IndexError):
         print('Could not decode or index prediction response: ', response.text)
