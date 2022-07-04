@@ -68,6 +68,7 @@ def index():
     aangevraagdDoorGerelateerde = object['http://www.egem.nl/StUF/sector/ef/0310:isAangevraagdDoor']['http://www.egem.nl/StUF/sector/ef/0310:gerelateerde']
 
     omschrijving = melding['http://www.egem.nl/StUF/sector/ef/0310:omschrijvingMelding']
+    waarGaatDeMeldingOver = melding['http://www.egem.nl/StUF/sector/ef/0310:waarGaatDeMeldingOver']
 
     emailadres = aangevraagdDoorGerelateerde['http://www.egem.nl/StUF/sector/bg/0310:sub.emailadres']
     telefoonnummer = aangevraagdDoorGerelateerde['http://www.egem.nl/StUF/sector/bg/0310:sub.telefoonnummer']
@@ -88,6 +89,12 @@ def index():
         'Content-type': 'application/json',
         'Authorization': f'Bearer {JWT_TOKEN}'
     }
+
+    if not omschrijving:
+        if waarGaatDeMeldingOver:
+            omschrijving = waarGaatDeMeldingOver
+        else:
+            omschrijving = 'overig'
 
     data = {
         'text': omschrijving
