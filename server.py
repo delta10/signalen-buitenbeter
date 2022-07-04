@@ -16,8 +16,11 @@ JWT_TOKEN = os.getenv('JWT_TOKEN')
 
 SOURCE_NAME = os.getenv('SOURCE_NAME', 'BuitenBeter')
 
-@app.route('/', methods=['POST'])
+@app.route('/', methods=['GET', 'POST'])
 def index():
+    if request.method == 'GET':
+        return ''
+
     namespaces = {
         'http://schemas.xmlsoap.org/soap/envelope/': 'soap',
         'http://www.egem.nl/StUF/StUF0301:x': 'stuf',
