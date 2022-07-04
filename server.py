@@ -108,15 +108,14 @@ def index():
 
     try:
         classification_data = response.json()
-        print(classification_data)
 
         if classification_data['subrubriek'][1][0] >= MINIMUM_CERTAINTY:
             sub_category = classification_data['subrubriek'][0][0]
         else:
             sub_category = SIGNALEN_ENDPOINT + '/v1/public/terms/categories/overig/sub_categories/overig'
 
-    except JSONDecodeError:
-        print('Could not decode prediction response: ', response.text)
+    except (JSONDecodeError, IndexError):
+        print('Could not decode or index prediction response: ', response.text)
 
     data = {
         'text': omschrijving,
