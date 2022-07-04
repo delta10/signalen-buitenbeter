@@ -17,6 +17,8 @@ JWT_TOKEN = os.getenv('JWT_TOKEN')
 
 SOURCE_NAME = os.getenv('SOURCE_NAME', 'BuitenBeter')
 
+MINIMUM_CERTAINTY = 0.41
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'GET':
@@ -106,10 +108,14 @@ def index():
 
     try:
         classification_data = response.json()
-        sub_category = classification_data['subrubriek'][0][0]
+
+        if classification_data['subrubriek'][1][0] >= MINIMUM_CERTAINTY:
+            sub_category = classification_data['subrubriek'][0][0]
+        else:
+            sub_category = SIGNALEN_ENDPOINT + '/v1/public/terms/categories/overig/sub_categories/overig'
+
     except JSONDecodeError:
         print('Could not decode prediction response: ', response.text)
-
 
     data = {
         'text': omschrijving,
@@ -135,6 +141,7 @@ def index():
     response = requests.post(SIGNALEN_ENDPOINT + '/v1/private/signals/', data=json.dumps(data), headers=headers)
 
     if not response.ok:
+        print('Could not create signal in Signalen: ', response.text)
         return 'Signal could not be created in Signalen', 400
 
     signal_data = response.json()
@@ -168,6 +175,7 @@ def index():
 
         response = requests.post(SIGNALEN_ENDPOINT + f'/v1/public/signals/{signal_id}/attachments/', data=data, files=files, headers=headers)
         if not response.ok:
+            print('Could not create attachment in Signalen: ', response.text)
             return 'Could not create attachment in Signalen', 400
 
         attachment_data = response.json()
