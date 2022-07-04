@@ -93,11 +93,16 @@ def index():
         'Authorization': f'Bearer {JWT_TOKEN}'
     }
 
-    text = 'niet ingevuld'
+    text = ''
+
+    if waarGaatDeMeldingOver and isinstance(waarGaatDeMeldingOver, str):
+        text = f'{waarGaatDeMeldingOver} '
+
     if omschrijvingMelding and isinstance(omschrijvingMelding, str):
-        text = omschrijvingMelding
-    elif waarGaatDeMeldingOver and isinstance(waarGaatDeMeldingOver, str):
-        text = waarGaatDeMeldingOver
+        text += omschrijvingMelding
+
+    if not text:
+        text = 'niet ingevuld'
 
     data = {
         'text': text
