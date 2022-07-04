@@ -4,6 +4,7 @@ import xmltodict
 import binascii
 import requests
 import json
+from requests.exceptions import JSONDecodeError
 from datetime import datetime
 from flask import Flask, Response, request
 from xml.parsers.expat import ExpatError
@@ -93,12 +94,20 @@ def index():
     }
 
     response = requests.post(SIGNALEN_ENDPOINT + '/category/prediction', data=json.dumps(data), headers=headers)
-    classification_data = response.json()
+
+    sub_category = None
+
+    try:
+        classification_data = response.json()
+        sub_category = classification_data['subrubriek'][0][0]
+    except JSONDecodeError:
+        print('Could not decode prediction response: ', response.text)
+
 
     data = {
         'text': omschrijving,
         'category': {
-            'sub_category': classification_data['subrubriek'][0][0]
+            'sub_category': sub_category
         },
         'location': {
             'address': adres,
