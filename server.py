@@ -1,4 +1,5 @@
 import os
+import re
 import base64
 import xmltodict
 import binascii
@@ -111,6 +112,9 @@ def index():
 
         if classification_data['subrubriek'][1][0] >= MINIMUM_CERTAINTY:
             sub_category = classification_data['subrubriek'][0][0]
+        elif classification_data['hoofdrubriek'][1][0] >= MINIMUM_CERTAINTY:
+            main_category_name = re.search(r"/terms/categories/(.*)$", classification_data['hoofdrubriek'][0][0])[1]
+            sub_category = classification_data['hoofdrubriek'][0][0] + f'/sub_categories/overig-{main_category_name}'
 
     except (JSONDecodeError, IndexError):
         print('Could not decode or index prediction response: ', response.text)
