@@ -58,10 +58,10 @@ def index():
         adresAanduidingGrp = gerelateerde.get('http://www.egem.nl/StUF/sector/bg/0310:adresAanduidingGrp')
 
     adres = None
-    if betreftAdres and gerelateerde and adresAanduidingGrp:
+    if betreftAdres and gerelateerde and adresAanduidingGrp and adresAanduidingGrp['http://www.egem.nl/StUF/sector/bg/0310:gor.openbareRuimteNaam'] and adresAanduidingGrp['http://www.egem.nl/StUF/sector/bg/0310:wpl.woonplaatsNaam']:
         adres = {
             'openbare_ruimte': adresAanduidingGrp['http://www.egem.nl/StUF/sector/bg/0310:gor.openbareRuimteNaam'],
-            'huisnummer': adresAanduidingGrp['http://www.egem.nl/StUF/sector/bg/0310:aoa.huisnummer'],
+            'huisnummer': adresAanduidingGrp.get('http://www.egem.nl/StUF/sector/bg/0310:aoa.huisnummer', ''),
             'postcode': '',
             'woonplaats': adresAanduidingGrp['http://www.egem.nl/StUF/sector/bg/0310:wpl.woonplaatsNaam']
         }
