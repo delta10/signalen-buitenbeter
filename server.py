@@ -9,7 +9,7 @@ from requests.exceptions import JSONDecodeError
 from datetime import datetime
 from flask import Flask, Response, request
 from xml.parsers.expat import ExpatError
-from lib import DeliveryConfirmationMessage
+from lib import DeliveryConfirmationMessage, is_valid_email
 
 app = Flask(__name__)
 
@@ -74,6 +74,9 @@ def index():
     waarGaatDeMeldingOver = melding['http://www.egem.nl/StUF/sector/ef/0310:waarGaatDeMeldingOver']
 
     emailadres = aangevraagdDoorGerelateerde['http://www.egem.nl/StUF/sector/bg/0310:sub.emailadres']
+    if not is_valid_email(emailadres):
+        emailadres = None
+
     telefoonnummer = aangevraagdDoorGerelateerde['http://www.egem.nl/StUF/sector/bg/0310:sub.telefoonnummer']
 
     extraElementen = object['http://www.egem.nl/StUF/StUF0301:extraElementen']['http://www.egem.nl/StUF/StUF0301:extraElement']
