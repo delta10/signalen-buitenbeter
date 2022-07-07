@@ -1,12 +1,14 @@
 FROM python:3.10.4-alpine AS build
 
-RUN apk add --no-cache build-base linux-headers
+RUN apk add --no-cache build-base linux-headers libxml2-dev libxslt-dev pcre-dev
 
 COPY requirements.txt /app/requirements.txt
 
 RUN pip install -r /app/requirements.txt
 
 FROM python:3.10.4-alpine
+
+RUN apk add --no-cache libxml2 libxslt pcre
 
 COPY --from=build /usr/local/lib/python3.10 /usr/local/lib/python3.10
 COPY --from=build /usr/local/bin/* /usr/local/bin/
@@ -20,4 +22,4 @@ RUN adduser -D -u 1001 appuser && \
 
 USER appuser
 
-CMD ["uwsgi", "--master", "-p", "4", "--http", "0.0.0.0:8000", "-w", "server:app"]
+CMD ["uwsgi", "--ini", "uwsgi.ini", "--http", "0.0.0.0:8000", "-w", "server:app"]
